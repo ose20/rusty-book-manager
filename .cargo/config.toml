@@ -1,0 +1,3 @@
+# sqlxのため
+[env]
+DATABASE_URL = "postgres://app:passwd@localhost:5433/app"
