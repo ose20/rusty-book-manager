@@ -12,6 +12,7 @@ async-trait.workspace = true
 bcrypt.workspace = true
 chrono.workspace = true
 derive-new.workspace = true
+redis.workspace = true
 sqlx.workspace = true
 uuid.workspace = true
 
