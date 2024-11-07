@@ -4,6 +4,7 @@ use crate::model::id::UserId;
 
 pub struct CreateToken {
     pub user_id: UserId,
+    // あれ、access_token のフィールドがあるってことはもう create されてる？
     pub access_token: String,
 }
 

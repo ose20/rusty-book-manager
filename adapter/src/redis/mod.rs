@@ -36,6 +36,4 @@ impl RedisClient {
         let _ = self.client.get_multiplexed_async_connection().await?;
         Ok(())
     }
-
-    
 }

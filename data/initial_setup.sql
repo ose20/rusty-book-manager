@@ -2,9 +2,10 @@ INSERT INTO
     roles (name)
 VALUES
     ('Admin'),
-    ('Users')
+    ('User')
 ON CONFLICT DO NOTHING;
 
+-- password は Pa55w0rd
 INSERT INTO
     users (name, email, password_hash, role_id)
 SELECT
