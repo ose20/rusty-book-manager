@@ -10,10 +10,13 @@ use kernel::model::{
     list::PaginatedList,
 };
 use serde::{Deserialize, Serialize};
+#[cfg(debug_assertions)]
+use utoipa::ToSchema;
 
 use super::user::{BookOwner, CheckoutUser};
 
 #[derive(Debug, Deserialize, Validate)]
+#[cfg_attr(debug_assertions, derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct CreateBookRequest {
     #[garde(length(min = 1))]
@@ -44,6 +47,7 @@ impl From<CreateBookRequest> for CreateBook {
 }
 
 #[derive(Debug, Deserialize, Validate)]
+#[cfg_attr(debug_assertions, derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateBookRequest {
     #[garde(length(min = 1))]
@@ -109,6 +113,7 @@ impl From<BookListQuery> for BookListOptions {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(debug_assertions, derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct BookResponse {
     pub id: BookId,
@@ -147,6 +152,7 @@ impl From<Book> for BookResponse {
 // 型の内部で持つフィールドは `PaginatedList<Book>` と同じであるが、
 // serde::Serialize を実装しているので JSON に変換してクライアントに返せる
 #[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(debug_assertions, derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct PaginatedBookResponse {
     pub total: i64,
@@ -173,6 +179,7 @@ impl From<PaginatedList<Book>> for PaginatedBookResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[cfg_attr(debug_assertions, derive(ToSchema))]
 #[serde(rename_all = "camelCase")]
 pub struct BookCheckoutResponse {
     pub id: CheckoutId,

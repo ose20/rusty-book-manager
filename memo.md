@@ -53,6 +53,11 @@ curl -v -X PUT "http://localhost:8080/api/v1/books/a1a61547a9394907b245d52690f27
     -H 'authorization: Bearer a912833f0f3b47509e48b0517b7366a7' | jq
 ```
 
+```sh
+curl -v "http://localhost:8080/api/v1/books?offset=aaa" \
+    -H 'authorization: Bearer b6a62a9f7b8d41068c05082580de9b20'
+```
+
 
 UIで借りる -> 返す -> 借りるとすると、次の返すでエラーになる
 APIでも起きるかな？

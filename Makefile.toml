@@ -40,6 +40,7 @@ run_task = [
         "compose-up-db",
         "migrate",
         "compose-up-redis",
+        "compose-up-jaeger",
     ] },
 ]
 
@@ -178,6 +179,11 @@ args = ["compose", "up", "-d", "postgres"]
 extend = "set-env-docker"
 command = "docker"
 args = ["compose", "up", "-d", "redis"]
+
+[tasks.compose-up-jaeger]
+extend = "set-env-docker"
+command = "docker"
+args = ["compose", "up", "-d", "jaeger"]
 
 [tasks.compose-down]
 extend = "set-env-docker"

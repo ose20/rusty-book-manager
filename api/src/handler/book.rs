@@ -20,7 +20,24 @@ use crate::{
 // create の引数に user.id() でユーザー ID を取得できるので
 // アクセスしてきたユーザーを所有者として蔵書データを登録する
 // え、ここから先はもうユーザ検証してなくない？
-#[axum::debug_handler]
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(post, path="/api/v1/books",
+        request_body = CreateBookRequest,
+        responses(
+            (status = 201, description = "蔵書の登録に成功した場合。"),
+            (status = 400, description = "リクエストのパラメータに不備があった場合。"),
+            (status = 401, description = "認証されていないユーザーがアクセスした場合。"),
+            (status = 422, description = "リクエストした蔵書の登録に失敗した場合。")
+        )
+    )
+)]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn register_book(
     user: AuthorizedUser,
     State(registry): State<AppRegistry>,
@@ -38,12 +55,37 @@ pub async fn register_book(
 
 // ここなんで user つかってる？
 // Todo: なくても動くか調べる
+// あとになって tracing で必要になっちゃった
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(
+        get,
+        path="/api/v1/books",
+        responses(
+            (status = 200, description = "蔵書一覧の取得に成功した場合。", body = PaginatedBookResponse),
+            (status = 400, description = "指定されたクエリの値に不備があった場合。"),
+            (status = 401, description = "認証されていないユーザーがアクセスした場合。"),
+        ),
+        params(
+            ("limit" = i64, Query, description = "一度に取得する蔵書数の上限値の指定"),
+            ("offset" = i64, Query, description = "取得対象とする蔵書一覧の開始位置"),
+        )
+    )
+)]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 #[axum::debug_handler]
 pub async fn show_book_list(
-    _user: AuthorizedUser,
+    user: AuthorizedUser,
     Query(query): Query<BookListQuery>,
     State(registry): State<AppRegistry>,
 ) -> AppResult<Json<PaginatedBookResponse>> {
+    query.validate(&())?;
+
     registry
         .book_repository()
         .find_all(query.into())
@@ -52,12 +94,36 @@ pub async fn show_book_list(
         .map(Json)
 }
 
+#[cfg_attr(
+    debug_assertions,
+    // 2
+    utoipa::path(
+        get,
+        path="/api/v1/books",
+        responses(
+            (status = 200, description = "蔵書一覧の取得に成功した場合。", body = PaginatedBookResponse),
+            (status = 400, description = "指定されたクエリの値に不備があった場合。"),
+            (status = 401, description = "認証されていないユーザーがアクセスした場合。"),
+        ),
+        params(
+            ("limit" = i64, Query, description = "一度に取得する蔵書数の上限値の指定"),
+            ("offset" = i64, Query, description = "取得対象とする蔵書一覧の開始位置"),
+        )
+    )
+)]
+#[tracing::instrument(
+    skip(_user, registry),
+    fields(
+        user_id = %_user.user.id.to_string()
+    )
+)]
 #[axum::debug_handler]
 pub async fn show_book(
     _user: AuthorizedUser,
     Path(book_id): Path<BookId>,
     State(registry): State<AppRegistry>,
 ) -> AppResult<Json<BookResponse>> {
+    tracing::info!("ここにログを追加した");
     registry
         .book_repository()
         .find_by_id(book_id)
@@ -68,6 +134,26 @@ pub async fn show_book(
         })
 }
 
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(put, path="/api/v1/books/{book_id}",
+        request_body = UpdateBookRequest,
+        responses(
+            (status = 200, description = "蔵書の更新に成功した場合。"),
+            (status = 400, description = "リクエストのパラメータに不備があった場合。"),
+            (status = 404, description = "変更対象の書籍が見つからなかった場合。")
+        ),
+        params(
+            ("book_id" = Uuid, Path, description = "蔵書ID")
+        )
+    )
+)]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn update_book(
     user: AuthorizedUser,
     Path(book_id): Path<BookId>,
@@ -84,6 +170,25 @@ pub async fn update_book(
         .map(|_| StatusCode::OK)
 }
 
+#[cfg_attr(
+    debug_assertions,
+    utoipa::path(delete, path="/api/v1/books/{book_id}",
+        responses(
+            (status = 204, description = "書籍の削除に成功した場合。"),
+            (status = 400, description = "リクエストのパラメータが不正だった場合。"),
+            (status = 404, description = "削除対象の書籍が存在しなかった場合。"),
+        ),
+        params(
+            ("book_id" = Uuid, Path, description = "蔵書ID")
+        )
+    )
+)]
+#[tracing::instrument(
+    skip(user, registry),
+    fields(
+        user_id = %user.user.id.to_string()
+    )
+)]
 pub async fn delete_book(
     user: AuthorizedUser,
     Path(book_id): Path<BookId>,

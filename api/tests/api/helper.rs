@@ -65,7 +65,7 @@ pub fn fixture(mut fixture_auth: MockAppRegistryExt) -> MockAppRegistryExt {
 
 pub trait TestRequestExt {
     fn bearer(self) -> Builder;
-    fn application_json(self) -> Builder;
+    // fn application_json(self) -> Builder;
 }
 
 impl TestRequestExt for Builder {
@@ -73,9 +73,9 @@ impl TestRequestExt for Builder {
         self.header("Authorization", "Bearer dummy")
     }
 
-    fn application_json(self) -> Builder {
-        self.header("Content-Type", "application/json")
-    }
+    //fn application_json(self) -> Builder {
+    //self.header("Content-Type", "application/json")
+    //}
 }
 
 // to_byte などを使って関数やトレイトに切り出してもよいのだが、

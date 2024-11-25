@@ -1,10 +1,13 @@
 use serde::{Deserialize, Serialize};
 use shared::error::AppError;
 use std::str::FromStr;
+#[cfg(debug_assertions)]
+use utoipa::ToSchema;
 
 macro_rules! define_id {
     ($id_type: ident) => {
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, sqlx::Type)]
+        #[cfg_attr(debug_assertions, derive(ToSchema))]
         #[serde(into = "String")]
         #[sqlx(transparent)]
         pub struct $id_type(uuid::Uuid);

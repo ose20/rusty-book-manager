@@ -12,11 +12,11 @@ use kernel::{
     repository::book::MockBookRepository,
 };
 use rstest::rstest;
-// use tower::ServiceExt;
+use tower::ServiceExt;
 
 use crate::{
     deserialize_json,
-    helper::{make_router, v1, TestRequestExt},
+    helper::{fixture, make_router, v1, TestRequestExt},
 };
 
 #[rstest]
@@ -27,6 +27,7 @@ use crate::{
 #[tokio::test]
 async fn show_book_list_with_query_200(
     // 1. fixture として mock オブジェクトを渡している
+    // helper::fixture の use が必要
     mut fixture: registry::MockAppRegistryExt,
     #[case] path: &str,
     #[case] expected_limit: i64,
